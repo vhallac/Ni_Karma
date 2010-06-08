@@ -43,8 +43,8 @@ function KarmaRoll_OnEvent(event)
 	cmd = Karma_StripTok(cmd);
 	local cmd2, extra2 = Karma_GetToken(extra);
 	cmd2 = Karma_StripTok(cmd2);
-	if (cmd == nks.KMSG.BONUS or cmd == nks.KMSG.NOBONUS or (cmd == nks.KMSG.NOBONUS1 and cmd2 == nks.KMSG.NOBONUS2)) then
-	    KarmaRoll_AddPlayer(arg2, cmd == nks.KMSG.BONUS);
+	if (cmd == nks.KMSG.OFFSPEC or cmd == nks.KMSG.BONUS or cmd == nks.KMSG.NOBONUS or (cmd == nks.KMSG.NOBONUS1 and cmd2 == nks.KMSG.NOBONUS2)) then
+	    KarmaRoll_AddPlayer(arg2, cmd == nks.KMSG.BONUS, cmd == nks.KMSG.OFFSPEC);
 	end
     elseif (nks.Active and event == "CHAT_MSG_SYSTEM" and string.find(arg1, nks.KMSG.SYS.ROLLS) and string.find(arg1, "%(1%-100%)")) then
 	_, _, player_name, player_roll = string.find(arg1, "(.+) " .. nks.KMSG.SYS.ROLLS .. " (%d+)");
@@ -56,8 +56,10 @@ end
 
 
 -- A player declared intention to roll, add them to list
-function KarmaRoll_AddPlayer(player_name, use_bonus)
+function KarmaRoll_AddPlayer(player_name, use_bonus, for_offspec)
     local player, fullname, class = Karma_Getstats(player_name);
+	-- Enforce Zebra rules: osspecs cannot bonus (won't happen from the caller side anyhow)
+	if for_offspec then use_bonus = false end
 
     if (KarmaList[Raid_Name][player] == nil) then
 	-- Add player to system
@@ -81,7 +83,7 @@ function KarmaRoll_AddPlayer(player_name, use_bonus)
 	    use_bonus = true; -- always bonus if you're negative muahhaa
 	end
 
-	table.insert(nks.RollList, {fullname, class, 0, 0, 0, use_bonus});
+	table.insert(nks.RollList, {fullname, class, 0, 0, 0, use_bonus, for_offspec});
 	if (not nks.OpenRoll) then
 	    if (use_bonus) then
 		Karma_message(nks.KMSG.REPLYBONUS1 .. KarmaList[Raid_Name][player]["points"] .. nks.KMSG.REPLYBONUS2, nks.KARMA_SHOWTO_PLAYER, player);
@@ -125,11 +127,15 @@ end
 
 -- Sort the rolls
 function KarmaRoll_Sort(a, b)
-    if (a[5] == b[5]) then
-      return (a[1] < b[1]);
-    else
-      return (a[5] > b[5]);
-    end;
+	if (a[7] == b[7]) then
+		if (a[5] == b[5]) then
+			return (a[1] < b[1]);
+		else
+			return (a[5] > b[5]);
+		end;
+	else
+		return not a[7]
+	end
 end
 
 -- Update the display
@@ -176,6 +182,7 @@ function KarmaRollList_Update()
 	button.rollIndex = rollIndex;
 	local roll_info = nks.RollList[rollIndex];
 	if (roll_info ~= nil) then
+	    getglobal("KarmaRollFrameButton"..i.."Type"):SetText(roll_info[6] and "B" or roll_info[7] and "O" or "N");
 	    getglobal("KarmaRollFrameButton"..i.."Name"):SetText(roll_info[1]);
 	    getglobal("KarmaRollFrameButton"..i.."Class"):SetText(roll_info[2]);
 	    getglobal("KarmaRollFrameButton"..i.."Karma"):SetText(roll_info[3]);

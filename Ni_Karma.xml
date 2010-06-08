@@ -1,15 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
 
-  <!-- Frame to handle all core events --> 
-  <Frame name="Karma_core" parent="UIParent"> 
-    <Scripts> 
-      <OnLoad> 
+  <!-- Frame to handle all core events -->
+  <Frame name="Karma_core" parent="UIParent">
+    <Scripts>
+      <OnLoad>
         Karma_OnLoad();
-      </OnLoad> 
-      <OnEvent> 
+      </OnLoad>
+      <OnEvent>
         Karma_OnEvent(event);
-      </OnEvent> 
-    </Scripts> 
+      </OnEvent>
+    </Scripts>
   </Frame>
 
   <Frame name="ConfigPanel">
@@ -37,14 +37,26 @@
     </Size>
     <Layers>
       <Layer level="BORDER">
-        <FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+        <FontString name="$parentType" inherits="GameFontNormalSmall" justifyH="LEFT">
           <Size>
-            <AbsDimension x="88" y="14"/>
+            <AbsDimension x="30" y="14"/>
           </Size>
           <Anchors>
             <Anchor point="TOPLEFT">
               <Offset>
                 <AbsDimension x="10" y="-3"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="88" y="14"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT" relativeTo="$parentType" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="10" y="0"/>
               </Offset>
             </Anchor>
           </Anchors>
@@ -123,7 +135,7 @@
 
   <Frame name="KarmaRollFrame" frameStrata="LOW" toplevel="true" enableMouse="true" movable="true" hidden="true" parent="UIParent">
     <Size>
-      <AbsDimension x="384" y="512" />
+      <AbsDimension x="424" y="512" />
     </Size>
 
     <Anchors>
@@ -150,7 +162,7 @@
             </Anchor>
           </Anchors>
         </FontString>
-        
+
         <FontString name="$parentItemLabel" inherits="GameFontNormal" justifyH="LEFT" text="Item:">
           <Size>
             <AbsDimension x="75" y="20"/>
@@ -175,14 +187,26 @@
             </Anchor>
           </Anchors>
         </FontString>
-        <FontString name="$parentTitle1" inherits="GameFontNormal" justifyH="LEFT" text="Player">
+        <FontString name="$parentTitle0" inherits="GameFontNormal" justifyH="LEFT" text="Type">
           <Size>
-            <AbsDimension x="98" y="20"/>
+            <AbsDimension x="40" y="20"/>
           </Size>
           <Anchors>
             <Anchor point="TOPLEFT" relativeTo="$parentBaseCostLabel" relativePoint="BOTTOMLEFT">
               <Offset>
                 <AbsDimension x="0" y="-10"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentTitle1" inherits="GameFontNormal" justifyH="LEFT" text="Player">
+          <Size>
+            <AbsDimension x="98" y="20"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT" relativeTo="$parentTitle0" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
               </Offset>
             </Anchor>
           </Anchors>
@@ -262,10 +286,10 @@
 
         <Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
           <Size>
-            <AbsDimension x="256" y="256"/>
+            <AbsDimension x="296" y="256"/>
           </Size>
           <Anchors>
-            <Anchor point="TOPLEFT"/>
+            <Anchor point="TOPLEFT" />
           </Anchors>
         </Texture>
         <Texture file="Interface\HelpFrame\HelpFrame-TopRight">
@@ -278,7 +302,7 @@
         </Texture>
         <Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
           <Size>
-            <AbsDimension x="256" y="256"/>
+            <AbsDimension x="296" y="256"/>
           </Size>
           <Anchors>
             <Anchor point="BOTTOMLEFT"/>
@@ -294,11 +318,11 @@
         </Texture>
       </Layer>
     </Layers>
-    
+
     <Frames>
       <Button name="KarmaRollFrameButton1" inherits="KarmaRollButtonTemplate" id="1">
         <Anchors>
-          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentTitle1">
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentTitle0">
             <Offset>
               <AbsDimension x="-8" y="-5"/>
             </Offset>
@@ -452,7 +476,7 @@
 
       <ScrollFrame name="KarmaRollScrollFrame" inherits="FauxScrollFrameTemplate">
         <Size>
-          <AbsDimension x="290" y="284"/>
+          <AbsDimension x="330" y="284"/>
         </Size>
         <Anchors>
           <Anchor point="TOPLEFT" relativeTo="KarmaRollFrameButton1">
@@ -691,11 +715,11 @@
 			</Offset>
 		  </Anchor>
 		</Anchors>
-        <Scripts> 
-          <OnClick> 
+        <Scripts>
+          <OnClick>
             Karma_Clearitem();
-          </OnClick> 
-        </Scripts> 
+          </OnClick>
+        </Scripts>
       </Button>
 
       <Button name="$parentClearButton" inherits="UIPanelButtonTemplate" text="Reset">
@@ -709,11 +733,11 @@
             </Offset>
           </Anchor>
         </Anchors>
-        <Scripts> 
-          <OnClick> 
+        <Scripts>
+          <OnClick>
             KarmaRollFrame_Clear();
-          </OnClick> 
-        </Scripts> 
+          </OnClick>
+        </Scripts>
       </Button>
       <Button name="$parentDeclareButton" inherits="UIPanelButtonTemplate" text="RW Announce">
         <Size>
@@ -726,11 +750,11 @@
             </Offset>
           </Anchor>
         </Anchors>
-        <Scripts> 
-          <OnClick> 
+        <Scripts>
+          <OnClick>
             KarmaRollFrame_RWAnnounce();
-          </OnClick> 
-        </Scripts> 
+          </OnClick>
+        </Scripts>
       </Button>
       <Button name="$parentAwardButton" inherits="UIPanelButtonTemplate" text="Declare Winner">
         <Size>
@@ -743,13 +767,13 @@
             </Offset>
           </Anchor>
         </Anchors>
-        <Scripts> 
-          <OnClick> 
+        <Scripts>
+          <OnClick>
             KarmaRollFrameAwardButton_OnClick();
-          </OnClick> 
-        </Scripts> 
+          </OnClick>
+        </Scripts>
       </Button>
     </Frames>
-    
+
   </Frame>
 </Ui>

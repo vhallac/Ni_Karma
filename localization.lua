@@ -89,6 +89,7 @@ nks.KMSG.NOBONUS = "nobonus"
 nks.KMSG.NOBONUS1 = "no"
 nks.KMSG.NOBONUS2 = "bonus"
 
+nks.KMSG.OFFSPEC = "offspec"
 
 nks.KMSG.REPLYBONUS1 = "Your Karma of "
 nks.KMSG.REPLYBONUS2 = " will be added to your roll"
