@@ -443,6 +443,32 @@ function Karma_SendTotal(player, ShowTo)
   end
 end
 
+
+function Karma_IsToday(datetime)
+    local yesterday_tbl = date("*t")
+    -- Works for negative numbers
+    yesterday_tbl.day = yesterday_tbl.day - 1
+    local yst_dt = date("%x", time(yesterday_tbl))
+
+    local cur_dt, cur_tm = string.split(" ", date())
+
+    local dt, tm = string.split(" ", datetime)
+
+    -- Consider it today if either dates are the same, or the date is for
+    -- yesterday, and it is still early hours.
+    return ( cur_dt == dt or
+             ( yst_dt == dt and tonumber(cur_tm:sub(1,2)) < 8))
+end
+
+function Karma_CleanStaleSitouts()
+    if KarmaConfig["CURRENT_SITOUTS"] then
+        if ( not KarmaConfig["LAST_SITOUT_UPDATE"] or
+             not Karma_IsToday(KarmaConfig["LAST_SITOUT_UPDATE"]) ) then
+            KarmaConfig["CURRENT_SITOUTS"] = {}
+        end
+    end
+end
+
 function Karma_Add(cmd, add_type)
 
   if (cmd ~= "") then
@@ -487,6 +513,9 @@ function Karma_Add(cmd, add_type)
 		  end
         end
       end
+
+      -- Get rid of old sitouts
+      Karma_CleanStaleSitouts()
 	  if KarmaConfig["CURRENT_SITOUTS"] then
 		  for name in pairs(KarmaConfig["CURRENT_SITOUTS"]) do
 			if not gaveKarma[string.lower(name)] then
@@ -595,6 +624,7 @@ function Karma_Mod_Player(kplayer, ktype, kvalue, kreason)
 end
 
 function Karma_AddSitout(name)
+    KarmaConfig["LAST_SITOUT_UPDATE"] = date()
     KarmaConfig["CURRENT_SITOUTS"] = KarmaConfig["CURRENT_SITOUTS"] or {};
     KarmaConfig["CURRENT_SITOUTS"][string.lower(name)] = true;
     Karma_message(nks.KMSG.ADDEDSITOUT .. name);
@@ -604,6 +634,7 @@ function Karma_RemoveSitout(name)
     if KarmaConfig["CURRENT_SITOUTS"] and KarmaConfig["CURRENT_SITOUTS"][string.lower(name)] then
         Karma_message(nks.KMSG.REMOVEDSITOUT .. name);
         KarmaConfig["CURRENT_SITOUTS"][string.lower(name)] = nil
+        KarmaConfig["LAST_SITOUT_UPDATE"] = date()
     end
 end
 
@@ -619,6 +650,9 @@ function Karma_ShowSitouts()
 end
 
 function Karma_Sitout(cmd)
+    -- Before doing anything, check if the list contains stale sitout list
+    Karma_CleanStaleSitouts()
+
     local args
     cmd, args = Karma_GetToken(cmd);
     cmd = Karma_StripTok(cmd);
@@ -639,6 +673,7 @@ function Karma_Sitout(cmd)
     elseif (cmd == nks.KMSG.CCLEAR) then
         Karma_message(nks.KMSG.CLEAREDSITOUTS);
         KarmaConfig["CURRENT_SITOUTS"] = nil;
+        KarmaConfig["LAST_SITOUT_UPDATE"] = nil
 
     else
         Karma_Sitout_Help();
